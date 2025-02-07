@@ -1,6 +1,6 @@
 from  datetime import datetime , timedelta
 from airflow import DAG
-from scrape_etl import extract, author_bio, go_through, join
+from scrape_etl import extract, author_bio, go_through, join, clean
 
 #It is a task operator , allowing to execute arbitraty python  functions or callable objects 
 from airflow.operators.python import PythonOperator
@@ -51,7 +51,11 @@ run_etl4 = PythonOperator(
     dag=dag
 )
 
+run_etl5 = PythonOperator(
+    task_id = 'transforming_data5',
+    python_callable = clean,
+    dag = dag
+)
 
-
-run_etl1 >> run_etl2 >> run_etl3 >> run_etl4
+run_etl1 >> run_etl2 >> run_etl3 >> run_etl4 >> run_etl5
 

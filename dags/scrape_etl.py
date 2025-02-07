@@ -84,12 +84,23 @@ def join():
     df1 = pd.read_csv('/opt/airflow/data/complete.csv')
     new_df = pd.merge(df, df1, left_index=True, right_index=True, how="outer")
     new_df.to_csv('/opt/airflow/data/bio.csv', encoding = 'utf-8', index = False)
+    
+def clean():
+    df3 = pd.read_csv('/opt/airflow/data/bio.csv')
+    df3['tags'] = df3['tags'].str.replace(r'\[|\]', '', regex=True)
+    df3['birth_location'] = df3['birth_location'].str.replace(r'\bin\b', '', regex = True)
+    df3['tags'] = df3['tags'].str.replace(r'\'', '', regex = True) 
+    df3['quote'] = df3['quote'].str.replace(r'[\u201C\u201D]', "", regex=True)
+    df3['birth_date'] = pd.to_datetime(df3['birth_date'], format='%B %d, %Y').dt.strftime('%Y-%m-%d')
+    df3.to_csv('/opt/airflow/data/transformed.csv', encoding = 'utf-8', index= False)
+   
 
 if __name__ == "__main__":
     extracted_data = extract()
     author_bio()
     go_through()
     join()
+    clean()
 
 
                 
